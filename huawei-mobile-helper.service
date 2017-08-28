@@ -1,0 +1,16 @@
+[Unit]
+Description=Huawei USB modem auto-connect
+BindsTo=dev-huawei_mobile_tty.device
+After=dev-huawei_mobile_tty.device
+
+[Service]
+Type=oneshot
+StandardOutput=tty
+StandardError=journal
+TTYPath=/dev/huawei_mobile_tty
+EnvironmentFile=/etc/huawei-mobile-helper.conf
+ExecStart=/usr/bin/huawei-mobile-helper --ndisdup
+RemainAfterExit=false
+
+[Install]
+WantedBy=dev-huawei_mobile_tty.device

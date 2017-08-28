@@ -1,0 +1,76 @@
+#!/bin/bash
+
+SELF="$0"
+
+my_ndisdup() {
+	echo -en "AT^NDISDUP=1,1,\"${ISP_APN}\",\"${ISP_USERNAME}\",\"${ISP_PASSWORD}\"\r\n"
+}
+
+my_debug() {
+	ip -br link 2>&1
+	lsusb 2>&1
+	lsusb -t 2>&1
+	lsusb -v 2>&1
+	find /dev/ttyUSB* -exec udevadm info -a '{}' ';' 2>&1
+}
+
+my_usage() {
+	echo "Usage: $SELF [--debug]"
+	exit 1
+}
+
+my_info() {
+	DEV=
+	for f in $(grep -l '^12d1$' $(find /sys/ -name idVendor 2>/dev/null)); do
+		test -d "${f%/*}" || continue
+		DEV="${f%/*}"
+		iface=$(cd $DEV/*/net/ 2>/dev/null && ls)
+		tty=($(ls -d $DEV/*/*/tty/* 2>/dev/null))
+		ttys=${#tty[@]}
+		if test 0 -lt "${#tty[@]}" -a -n "$iface"; then
+			echo "\
+Huawei device: $DEV
+This device looks good!
+"
+			break
+		else
+			test -z "$iface" && iface="interface_not_found"
+			echo "\
+Huawei device: $DEV
+This device looks bad. :(
+This script might be wrong, though, so you can still give it a try!
+"
+		fi
+	done
+
+	if test -z "$DEV"; then
+		echo "Couldn't find any Huawei devices. See README.md for help."
+		exit 0
+	fi
+
+	echo "\
+TTY count: ${#tty[@]}
+Interface: ${iface}
+
+Enable the NDISDUP script:
+  systemctl enable huawei-mobile-helper.service
+Enable DHCP on interface ${iface}:
+  systemctl enable dhcpcd@${iface}.service
+  # (netctl, NetworkManager, systemd-networkd, ...)
+Reboot"
+}
+
+case "$1" in
+	"--ndisdup")
+		my_ndisdup
+		;;
+	"--debug")
+		my_debug
+		;;
+	"--info"|"")
+		my_info
+		;;
+	*)
+		my_usage
+		;;
+esac

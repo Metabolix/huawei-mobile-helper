@@ -1,0 +1,12 @@
+# Symlink the control tty of Huawei USB modems to /dev/huawei_mobile_tty
+# and notify systemd to allow automatically sending a NDISDUP command.
+
+ACTION!="add|change", GOTO="huawei_mobile_helper_end"
+
+SUBSYSTEM=="tty", ATTRS{idVendor}=="12d1", GOTO="huawei_mobile_helper_00"
+GOTO="huawei_mobile_helper_end"
+
+LABEL="huawei_mobile_helper_00"
+ATTRS{bInterfaceNumber}=="00", SYMLINK+="huawei_mobile_tty", TAG+="systemd", GOTO="huawei_mobile_helper_end"
+
+LABEL="huawei_mobile_helper_end"
