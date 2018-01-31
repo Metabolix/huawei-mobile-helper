@@ -6,6 +6,11 @@ my_ndisdup() {
 	echo -en "AT^NDISDUP=1,1,\"${ISP_APN}\",\"${ISP_USERNAME}\",\"${ISP_PASSWORD}\"\r\n"
 }
 
+my_reset() {
+	echo -en "AT^RESET\r\n"
+	echo -en "AT^RESET\r\n" # E3372 needs another one...
+}
+
 my_debug() {
 	ip -br link 2>&1
 	lsusb 2>&1
@@ -63,6 +68,9 @@ Reboot"
 case "$1" in
 	"--ndisdup")
 		my_ndisdup
+		;;
+	"--reset")
+		my_reset
 		;;
 	"--debug")
 		my_debug

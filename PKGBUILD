@@ -1,5 +1,5 @@
 pkgname=huawei-mobile-helper
-pkgver=1.0
+pkgver=1.1
 pkgrel=1
 pkgdesc="Auto-connect for non-HiLink Huawei USB dongles"
 arch=('any')

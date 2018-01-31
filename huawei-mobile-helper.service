@@ -10,7 +10,8 @@ StandardError=journal
 TTYPath=/dev/huawei_mobile_tty
 EnvironmentFile=/etc/huawei-mobile-helper.conf
 ExecStart=/usr/bin/huawei-mobile-helper --ndisdup
-RemainAfterExit=false
+ExecStop=/usr/bin/huawei-mobile-helper --reset
+RemainAfterExit=true
 
 [Install]
 WantedBy=dev-huawei_mobile_tty.device
